@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Записная книжка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        textarea {
+            height: 150px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+        }
+
+        .error {
+            background-color: #ffe6e6;
+            color: #990000;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .notes-list {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .note {
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+
+        .note h3 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .note p {
+            color: #666;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <h1>Новая записка</h1>
+            <form id="noteForm">
+                <label for="title">Заголовок:</label>
+                <input type="text" id="title" name="title" placeholder="Введите заголовок..." required>
+
+                <label for="content">Текст записки:</label>
+                <textarea id="content" name="content" placeholder="Напишите вашу заметку..." required></textarea>
+
+                <button type="submit">Сохранить записку</button>
+            </form>
+        </div>
+
+        <div class="notes-list">
+            <h1>Ваши записки</h1>
+            <div id="notesContainer">
+                <div class="loading">Загружаем записки...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Базовый URL вашего бэкенда
+        const GET_NOTES_URL = 'http://127.0.0.1:8000/api/v1/note/';
+        const POST_NOTE_URL = 'http://127.0.0.1:8000/api/v1/note/';
+
+        // Функция для загрузки всех записок
+        async function loadNotes() {
+            try {
+                const response = await fetch(GET_NOTES_URL);
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка сервера: ${response.status}`);
+                }
+
+                const notes = await response.json();
+                displayNotes(notes);
+            } catch (error) {
+                document.getElementById('notesContainer').innerHTML = `
+                    <div class="error">Не удалось загрузить записки: ${error.message}</div>
+                `;
+            }
+        }
+
+        // Функция для отображения записок
+        function displayNotes(notes) {
+            const container = document.getElementById('notesContainer');
+            if (notes.length === 0) {
+                container.innerHTML = '<p>Пока нет ни одной записки.</p>';
+                return;
+            }
+            container.innerHTML = '';
+            notes.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note';
+                noteElement.innerHTML = `
+                    <h3>${note.title}</h3>
+                    <p>${note.content}</p>
+                `;
+                container.appendChild(noteElement);
+            });
+        }
+
+        // Функция для отправки новой записки
+        async function submitNote(title, content) {
+            try {
+                const response = await fetch(POST_NOTE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка сервера: ${response.status}`);
+                }
+
+                // После успешной отправки перезагружаем список записок
+                await loadNotes();
+
+                // Очищаем форму
+                document.getElementById('title').value = '';
+                document.getElementById('content').value = '';
+
+                // Фокусируем поле заголовка
+                document.getElementById('title').focus();
+
+            } catch (error) {
+                alert(`Не удалось сохранить записку: ${error.message}`);
+            }
+        }
+
+        // Обработчик отправки формы
+        document.getElementById('noteForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+
+            await submitNote(title, content);
+        });
+
+        // Загружаем записки при открытии страницы
+        document.addEventListener('DOMContentLoaded', loadNotes);
+    </script>
+</body>
+</html>
