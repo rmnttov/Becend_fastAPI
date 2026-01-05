@@ -3,13 +3,12 @@ from src.scheme.notes import Note
 
 router = APIRouter()
 
-
 notes = []
+
 
 @router.post('/')
 def post_notes(body: Note):
     notes.append(body)
-
 
 @router.get('/')
 def get_notes():
@@ -22,10 +21,10 @@ def update_note(body: Note, id: int):
     notes[id] = body
 
 
+
 @router.delete('/{id}')
 def delete_note(id: int):
-    notes.pop(id)
-
+    notes.pop(id)  # id верный берётся?
 
 # @router.get("/")
 # def hi_mam():

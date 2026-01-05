@@ -3,7 +3,7 @@ from fastapi.routing import APIRouter
 
 from src.config import settings
 from src.route.notes import router as notes_router
-from src.route.notes import router as users_router
+from src.route.users import router as users_router
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI(docs_url=f'{settings.BASE_ROUTE_PATH}/docs')

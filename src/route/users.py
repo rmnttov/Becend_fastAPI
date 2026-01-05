@@ -1,13 +1,12 @@
 from fastapi.routing import APIRouter
-from src.scheme.notes import Note
+from src.scheme.users import User
 
 router = APIRouter()
-
 
 users = []
 
 @router.post('/')
-def post_user(body: Note):
+def post_user(body: User):
     users.append(body)
 
 
@@ -17,8 +16,8 @@ def get_users():
 
 
 @router.patch('/{id}')
-def update_user(body: Note, id: int):
-    print(body.title)
+def update_user(body: User, id: int):
+    print(body.name)
     users[id] = body
 
 
