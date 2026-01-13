@@ -16,8 +16,8 @@ from src.config import settings
 from src.adapter.db.session import Base
 
 # should add all models here
-from src.model.user import User
-from src.model.notes import Notes
+from src.model.user import UserModel
+from src.model.note import NoteModel
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

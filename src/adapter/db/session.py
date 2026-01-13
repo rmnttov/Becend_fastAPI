@@ -5,7 +5,7 @@ from src.config import settings
 
 
 # 'jdbc:postgresql://localhost:5435/postgres'
-engine = create_async_engine(url=settings.DB.SQLALCHEMY_DATABASE_URI)
+engine = create_async_engine(url=settings.DB.SQLALCHEMY_DATABASE_URI, echo=True)
 async_session = sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
 )

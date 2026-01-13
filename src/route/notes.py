@@ -7,23 +7,23 @@ notes = []
 
 
 @router.post('/')
-def post_notes(body: Note):
+async def post_notes(body: Note):
     notes.append(body)
 
+
 @router.get('/')
-def get_notes():
+async def get_notes():
     return notes
 
 
 @router.patch('/{id}')
-def update_note(body: Note, id: int):
+async def update_note(body: Note, id: int):
     print(body.title)
     notes[id] = body
 
 
-
 @router.delete('/{id}')
-def delete_note(id: int):
+async def delete_note(id: int):
     notes.pop(id)  # id верный берётся?
 
 # @router.get("/")
@@ -39,4 +39,3 @@ def delete_note(id: int):
 # @router.post("/some-post")
 # def hi_mam(body: dict):
 #     return body['param']
-

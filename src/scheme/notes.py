@@ -1,8 +1,14 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, UUID4
 
 
 class Note(BaseModel):
     title: str | None = Field(description="Note title", default='Заголовк')
     text: str | None = Field(description="Note text", default=None)
-    likes: int | None = Field(description="Number of kikes for current note", default=0, ge=0)
+    author_uid: UUID4 = Field(description="User uid")
+
+class NoteFromDB(BaseModel):
+    uid: UUID4 = Field(description="Note uid")
+    title: str | None = Field(description="Note title", default='Заголовк')
+    text: str | None = Field(description="Note text", default=None)
+    author_uid: UUID4 = Field(description="User uid")
 
