@@ -11,10 +11,14 @@ migration-generate: requirements
 	# generate new revision based on current difference with db
 	poetry run alembic revision --autogenerate -m "$(ARGS)"
 
-.PHONY: migrations_generate
-migrations_generate: requirements
+.PHONY: migrations_upgrade
+migrations_upgrade: requirements
 	poetry run alembic upgrade head
 
+.PHONY: check_flake8
+check_flake8: requirements
+	poetry run flake8
+
 .PHONY: run_uvicorn
-run_uvicorn: migrations_generate
+run_uvicorn: migrations_upgrade
 	poetry run uvicorn src.main:app --reload

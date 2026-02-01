@@ -6,9 +6,14 @@ from src.scheme.users import User, UserFromDB
 from src.model.user import UserModel
 from src.adapter.db.session import get_session
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
 
 users = []
+
 
 @router.post('/')
 async def post_user(body: User, db_session: AsyncSession = Depends(get_session)) -> UserFromDB:
@@ -24,6 +29,7 @@ async def post_user(body: User, db_session: AsyncSession = Depends(get_session))
 async def get_users(age, db_session: AsyncSession = Depends(get_session)) -> list[UserFromDB]:
     # db_session.execute(f"SELECT * FROM users WHERE age >= {age}")
     # db_session.execute("SELECT * FROM users WHERE age >= :age", {'age': 21})
+    logger.critical("critical message (on routes import)")
     query_result = await db_session.execute(select(UserModel))
     return query_result.scalars().all()
 
