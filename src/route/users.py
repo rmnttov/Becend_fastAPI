@@ -26,20 +26,25 @@ async def post_user(body: User, db_session: AsyncSession = Depends(get_session))
 
 
 @router.get('/')
-async def get_users(age, db_session: AsyncSession = Depends(get_session)) -> list[UserFromDB]:
-    # db_session.execute(f"SELECT * FROM users WHERE age >= {age}")
+async def get_users(name_r, db_session: AsyncSession = Depends(get_session)) -> list[UserFromDB]:
+    query_result = await db_session.execute(f"SELECT * FROM user WHERE name = {name_r}")
     # db_session.execute("SELECT * FROM users WHERE age >= :age", {'age': 21})
-    logger.critical("critical message (on routes import)")
-    query_result = await db_session.execute(select(UserModel))
+    #logger.critical("critical message (on routes import)")
+    #query_result = await db_session.execute(select(UserModel))
     return query_result.scalars().all()
 
 
 @router.patch('/{id}')
-async def update_user(body: User, id: int):
-    print(body.name)
-    users[id] = body
+async def update_user(body: User, id: int, db_session: AsyncSession = Depends(get_session)) -> UserFromDB:
+    new_user_data = UserModel(name=body.name, email=body.email)
+    db_session.filter_by(uid=id).update(new_user_data)
+    await db_session.commit()
+    #print(body.name)
+    #users[id] = body
+    return new_user_data #Возвращается на фронт?
 
 
 @router.delete('/{id}')
-async def delete_user(id: int):
-    users.pop(id)
+async def delete_user(id: int, db_session: AsyncSession = Depends(get_session)) -> None:
+    db_session.filter_by(uid=id).delete()
+    await db_session.commit()
