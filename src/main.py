@@ -16,7 +16,7 @@ app.add_middleware(
 
 router = APIRouter(prefix=settings.BASE_ROUTE_PATH)
 
-router.include_router(notes_router, prefix='/note')
-router.include_router(users_router, prefix='/user')
+router.include_router(notes_router, prefix='/note', tags=['note'])
+router.include_router(users_router, prefix='/user', tags=['user'])
 
 app.include_router(router)

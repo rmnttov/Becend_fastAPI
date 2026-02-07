@@ -14,4 +14,4 @@ class NoteModel(Base):
 
     author_uid: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey("user.uid"), nullable=False)
 
-    user = relationship("User", backref="user_notes")
+    user = relationship("UserModel", backref="user_notes")
