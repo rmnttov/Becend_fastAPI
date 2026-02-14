@@ -6,7 +6,7 @@ from src.scheme.notes import NoteFromDB
 class User(BaseModel):
     name: str | None = Field(description="User name", default='Иванов')
     email: str | None = Field(description="User email", default='ivanov@mail.com')
-    password: str | None = Field(description="User password", default='951753')
+    # password: str | None = Field(description="User password", default='951753')
 
 
 class UserFromDB(BaseModel):
@@ -20,6 +20,7 @@ class UserWithNotes(BaseModel):
     name: str | None = Field(description="User name", default='Иванов')
     email: str | None = Field(description="User email", default='ivanov@mail.com')
     user_notes: list[NoteFromDB] | None = Field(description="User notes", default=None)
+
 
 class UserFilter(BaseModel):
     limit: int = Field(description="Note limit", default=10)

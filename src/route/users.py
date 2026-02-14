@@ -1,5 +1,6 @@
 from fastapi import Depends
 from fastapi.routing import APIRouter
+from pydantic import UUID4
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.scheme.users import User, UserFromDB, UserWithNotes, UserFilter
@@ -22,26 +23,17 @@ users = []
 # TODO move business logic to service
 
 @router.post('/')
-async def post_user(body: User, db_session: AsyncSession = Depends(get_session)) -> UserFromDB:
-    return await UserService.create_user(body, db_session)
+async def post_user(body: User) -> UserFromDB:
+    return await UserService.create_user(body)
 
 
 @router.get('/{uid}')
-async def get_user(filter_data: UserFilter, db_session: AsyncSession = Depends(get_session)): #-> UserWithNotes:
-    #stmt = select(UserModel).filter(UserModel.uid == uid)
-    #query_result = await db_session.execute(stmt)
-    #user = query_result.scalars().first()
-    # query_result = await db_session.execute(text(f"SELECT * FROM user WHERE uid = {uid}"))
-    #notes_filter = NoteFilter(limit=0, offset=0, user_id=uid)
-    #user_notes = [NoteFromDB(uid=n.uid, title=n.title, text=n.text, author_uid=n.author_uid) for n in await NoteService.get_notes_list(notes_filter, db_session)]
-    #print(user_notes)
-    #user_output = UserWithNotes(uid=user.uid, name=user.name, email=user.email, user_notes=user_notes)
-    # user.user_notes = user_notes
-    #return user_output
-    return await UserService.get_users_list(filter_data, db_session)
+async def get_user(uid: UUID4): #-> UserWithNotes:
+    return await UserService.get_user(uid)
 
+# f37588ea-bac0-46f8-a127-038b8e0d36aa
 
-@router.get('/')
+@router.post('/get-list/')
 async def get_users(filter_data: UserFilter, db_session: AsyncSession = Depends(get_session)): #-> list[UserFromDB]:
     return await UserService.get_users_list(filter_data, db_session)
 
