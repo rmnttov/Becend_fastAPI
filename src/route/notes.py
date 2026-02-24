@@ -10,8 +10,8 @@ router = APIRouter()
 
 
 @router.post('/')
-async def post_notes(body: Note, db_session: AsyncSession = Depends(get_session)) -> NoteFromDB:
-    return await NoteService.create_note(body, db_session)
+async def post_notes(body: Note) -> NoteFromDB:
+    return await NoteService.create_note(body)
 
 
 @router.post('/list/')
@@ -20,10 +20,10 @@ async def get_notes(filter_data: NoteFilter, db_session: AsyncSession = Depends(
 
 
 @router.patch('/{id}')
-async def update_note(body: Note, uid: str, db_session: AsyncSession = Depends(get_session)) -> NoteFromDB:
-    return await NoteService.update_note(body, db_session)
+async def update_note(body: Note, uid: str) -> NoteFromDB:
+    return await NoteService.update_note(body, uid)
 
 
 @router.delete('/{id}')
-async def delete_note(uid: str, db_session: AsyncSession = Depends(get_session)) -> None:
-    return await NoteService.delete_note(uid, db_session)
+async def delete_note(uid: str) -> None:
+    return await NoteService.delete_note(uid)

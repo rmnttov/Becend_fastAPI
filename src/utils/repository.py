@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from sqlalchemy import select
+from sqlalchemy import select, or_, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.adapter.db.session import async_session_maker
@@ -48,11 +48,32 @@ class SQLAlchemyRepository(AbstractRepository):
             res = res.scalar_one_or_none()
         return res
 
-    # TODO delete_one, update_one
+    async def update_one(self, data: dict, uid):
 
-    async def get_list(self, **filter_by):
+        if not uid:
+            raise ValueError("uid is required for update")
+
+        async with self.async_session_maker() as session:
+            query = update(self.model).where(self.model.uid == uid).values(**data)
+
+            await session.execute(query)
+            await session.commit()
+
+        return "Обновляем"
+
+    async def delete_one(self, uid):
+        async with self.async_session_maker() as session:
+            stmt = delete(self.model).where(self.model.uid == uid)
+
+            await session.execute(stmt)
+            await session.commit()
+
+        return "Удаляем"
+
+
+    async def get_list(self):
         async with self.async_session_maker() as session:
             query = select(self.model)
             res = await session.execute(query)
-            res = [row[0] for row in res.all()]
+            #res = [row[0] for row in res.all()]
         return res

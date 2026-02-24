@@ -34,16 +34,16 @@ async def get_user(uid: UUID4): #-> UserWithNotes:
 # f37588ea-bac0-46f8-a127-038b8e0d36aa
 
 @router.post('/get-list/')
-async def get_users(filter_data: UserFilter, db_session: AsyncSession = Depends(get_session)): #-> list[UserFromDB]:
-    return await UserService.get_users_list(filter_data, db_session)
+async def get_users(filter_data: UserFilter): #-> list[UserFromDB]:
+    return await UserService.get_users_list(filter_data)
 
 
 @router.patch('/{id}')
-async def update_user(body: User, uid: str, db_session: AsyncSession = Depends(get_session)) -> UserFromDB:
-    return await UserService.update_user(body, db_session)
+async def update_user(body: User, uid: str) -> UserFromDB:
+    return await UserService.update_user(body, uid)
 
 
 @router.delete('/{id}')
-async def delete_user(uid: str, db_session: AsyncSession = Depends(get_session)) -> str:
-    return await UserService.delete_user(uid, db_session)
+async def delete_user(uid: str) -> str:
+    return await UserService.delete_user(uid)
     return 'слушаюсь и повинуюсь'

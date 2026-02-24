@@ -1,4 +1,6 @@
 from fastapi.routing import APIRouter
+
+from src.repository.note import NoteRepository
 from src.scheme.notes import Note, NoteFilter
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,15 +9,18 @@ from src.model.note import NoteModel
 
 router = APIRouter()
 
+note_repository = NoteRepository()
+
 
 class NoteService:
 
     @staticmethod
-    async def create_note(body: Note, db_session: AsyncSession) -> NoteFromDB:
-        new_note = NoteModel(**body.dict())
-        db_session.add(new_note)
-        await db_session.commit()
-        return new_note
+    async def create_note(body: Note) -> NoteFromDB:
+        return await note_repository.add_one(body.dict())
+        #new_note = NoteModel(**body.dict())
+        #db_session.add(new_note)
+        #await db_session.commit()
+        #return new_note
 
     @staticmethod
     async def get_notes_list(filter_data: NoteFilter, db_session: AsyncSession) -> list[NoteModel]:
@@ -37,13 +42,15 @@ class NoteService:
         return query_result.scalars().all()
 
     @staticmethod
-    async def update_note(body: Note, uid: str, db_session: AsyncSession) -> NoteFromDB:
-        new_note_data = NoteModel(**body.dict())
-        db_session.filter_by(uid=uid).update(new_note_data)
-        await db_session.commit()
-        return new_note_data
+    async def update_note(body: Note, uid: str) -> NoteFromDB:
+        return await note_repository.update_one(body.dict(), uid)
+        #new_note_data = NoteModel(**body.dict())
+        #db_session.filter_by(uid=uid).update(new_note_data)
+        #await db_session.commit()
+        #return new_note_data
 
     @staticmethod
-    async def delete_note(uid: str, db_session: AsyncSession):
-        db_session.filter_by(uid=uid).delete()
-        await db_session.commit()
+    async def delete_note(uid: str):
+        return await note_repository.delete_one(uid)
+        #db_session.filter_by(uid=uid).delete()
+        #await db_session.commit()
