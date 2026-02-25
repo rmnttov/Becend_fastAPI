@@ -55,6 +55,11 @@ class Settings(BaseSettings):
     DB: DbSettings = DbSettings()
     LOG_LEVEL: str = 'INFO'
 
+    # TODO
+    BASE_OLLAMA_MODEL: str = 'qwen3:4b'
+    OLLAMA_MODEL: str = 'qwen3-short-thinker'
+    OLLAMA_MODEL_CONTEXT: str = ''
+
 
 settings = Settings()
 

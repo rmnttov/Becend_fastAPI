@@ -6,6 +6,8 @@ from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.scheme.notes import Note, NoteFromDB
 from src.model.note import NoteModel
+import time
+import asyncio
 
 router = APIRouter()
 
@@ -17,10 +19,10 @@ class NoteService:
     @staticmethod
     async def create_note(body: Note) -> NoteFromDB:
         return await note_repository.add_one(body.dict())
-        #new_note = NoteModel(**body.dict())
-        #db_session.add(new_note)
-        #await db_session.commit()
-        #return new_note
+        # new_note = NoteModel(**body.dict())
+        # db_session.add(new_note)
+        # await db_session.commit()
+        # return new_note
 
     @staticmethod
     async def get_notes_list(filter_data: NoteFilter, db_session: AsyncSession) -> list[NoteModel]:
@@ -44,13 +46,36 @@ class NoteService:
     @staticmethod
     async def update_note(body: Note, uid: str) -> NoteFromDB:
         return await note_repository.update_one(body.dict(), uid)
-        #new_note_data = NoteModel(**body.dict())
-        #db_session.filter_by(uid=uid).update(new_note_data)
-        #await db_session.commit()
-        #return new_note_data
+        # new_note_data = NoteModel(**body.dict())
+        # db_session.filter_by(uid=uid).update(new_note_data)
+        # await db_session.commit()
+        # return new_note_data
 
     @staticmethod
     async def delete_note(uid: str):
         return await note_repository.delete_one(uid)
-        #db_session.filter_by(uid=uid).delete()
-        #await db_session.commit()
+
+    @staticmethod
+    async def generate_note_with_ai(uid: str, input_note: Note):
+        time.sleep(5)
+        text = 'generated text' + input_note.text
+        await note_repository.update_one(
+            {
+                'uid': uid,
+                'text': text
+            },
+            uid
+        )
+
+    @staticmethod
+    async def generate_note(input_note_uid: str) -> Note:
+        input_note = await note_repository.get_one(uid=input_note_uid)
+        result_note = await note_repository.add_one({
+            'title': f'{input_note.title} RETELLING',
+            'text': 'handling ...',
+            'author_uid': input_note.author_uid,
+        })
+        asyncio.create_task(
+            NoteService.generate_note_with_ai(result_note.uid, input_note)
+        )
+        return result_note

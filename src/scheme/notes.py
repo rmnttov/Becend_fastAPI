@@ -18,4 +18,4 @@ class NoteFilter(BaseModel):
     limit: int = Field(description="Note limit", default=10)
     offset: int = Field(description="Note offset", default=0)
     search: str | None = Field(description="Search text", default=None)
-    user_uid: UUID4 | None = Field(description="User uid", default=None)
+    author_uid: UUID4 | None = Field(description="Author uid", default=None)

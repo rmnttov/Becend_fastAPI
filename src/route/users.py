@@ -1,14 +1,6 @@
-from fastapi import Depends
 from fastapi.routing import APIRouter
 from pydantic import UUID4
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from src.scheme.users import User, UserFromDB, UserWithNotes, UserFilter
-from src.scheme.notes import NoteFilter
-from src.model.user import UserModel
-from src.service.notes import NoteService
-from src.adapter.db.session import get_session
-from src.scheme.notes import NoteFromDB
 
 import logging
 
@@ -38,12 +30,11 @@ async def get_users(filter_data: UserFilter): #-> list[UserFromDB]:
     return await UserService.get_users_list(filter_data)
 
 
-@router.patch('/{id}')
-async def update_user(body: User, uid: str) -> UserFromDB:
+@router.patch('/{uid}')
+async def update_user(body: User, uid: UUID4) -> UserFromDB:
     return await UserService.update_user(body, uid)
 
 
-@router.delete('/{id}')
-async def delete_user(uid: str) -> str:
+@router.delete('/{uid}')
+async def delete_user(uid: UUID4) -> str:
     return await UserService.delete_user(uid)
-    return 'слушаюсь и повинуюсь'

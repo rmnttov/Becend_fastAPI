@@ -49,7 +49,6 @@ class SQLAlchemyRepository(AbstractRepository):
         return res
 
     async def update_one(self, data: dict, uid):
-
         if not uid:
             raise ValueError("uid is required for update")
 
@@ -70,10 +69,9 @@ class SQLAlchemyRepository(AbstractRepository):
 
         return "Удаляем"
 
-
     async def get_list(self):
         async with self.async_session_maker() as session:
             query = select(self.model)
             res = await session.execute(query)
-            #res = [row[0] for row in res.all()]
+            # res = [row.serialize() for row in res.all()]
         return res
