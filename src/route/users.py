@@ -12,7 +12,6 @@ router = APIRouter()
 
 users = []
 
-# TODO move business logic to service
 
 @router.post('/')
 async def post_user(body: User) -> UserFromDB:
@@ -31,7 +30,7 @@ async def get_users(filter_data: UserFilter): #-> list[UserFromDB]:
 
 
 @router.patch('/{uid}')
-async def update_user(body: User, uid: UUID4) -> UserFromDB:
+async def update_user(body: User, uid: UUID4): #-> UserFromDB:
     return await UserService.update_user(body, uid)
 
 

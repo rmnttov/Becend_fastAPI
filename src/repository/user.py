@@ -1,6 +1,7 @@
 from src.utils.repository import SQLAlchemyRepository
 from src.model.user import UserModel
 from sqlalchemy import select, or_
+import logging
 
 from src.scheme.users import UserFilter
 
@@ -11,8 +12,8 @@ class UserRepository(SQLAlchemyRepository):
     async def get_list(self, filter: UserFilter):
         async with self.async_session_maker() as session:
             stmt = select(UserModel)
-            if filter.user_uid is not None:
-                stmt = stmt.where(UserModel.uid == filter.user_uid)
+            #if filter.user_uid is not None:
+             #   stmt = stmt.where(UserModel.uid == filter.user_uid)
             if filter.search is not None:
                 stmt = stmt.filter(
                     or_(
@@ -25,5 +26,6 @@ class UserRepository(SQLAlchemyRepository):
                 stmt = stmt.offset(filter.offset)
                 stmt = stmt.order_by('uid')
 
-            query_result = session.execute(stmt)
+            query_result = await session.execute(stmt)
+            logging.info(query_result)
             return query_result.scalars().all()

@@ -1,3 +1,4 @@
+import logging
 from abc import ABC, abstractmethod
 
 from sqlalchemy import select, or_, update, delete
@@ -15,13 +16,13 @@ class AbstractRepository(ABC):
     async def get_one():
         raise NotImplementedError
 
-    # @abstractmethod
-    # async def update_one():
-    #     raise NotImplementedError
-    #
-    # @abstractmethod
-    # async def delete_one():
-    #     raise NotImplementedError
+    @abstractmethod
+    async def update_one():
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_one():
+        raise NotImplementedError
 
     @abstractmethod
     async def get_list():
@@ -53,12 +54,14 @@ class SQLAlchemyRepository(AbstractRepository):
             raise ValueError("uid is required for update")
 
         async with self.async_session_maker() as session:
-            query = update(self.model).where(self.model.uid == uid).values(**data)
+            logging.info(f"updating {data}")
+            query = update(self.model).where(self.model.uid == uid).values(data)
 
             await session.execute(query)
             await session.commit()
 
         return "Обновляем"
+
 
     async def delete_one(self, uid):
         async with self.async_session_maker() as session:
@@ -73,5 +76,6 @@ class SQLAlchemyRepository(AbstractRepository):
         async with self.async_session_maker() as session:
             query = select(self.model)
             res = await session.execute(query)
-            # res = [row.serialize() for row in res.all()]
+            res = res.scalars().all()
+            #res = [row.serialize() for row in res.all()]
         return res
