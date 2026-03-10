@@ -23,7 +23,7 @@ class UserWithNotes(BaseModel):
 
 
 class UserFilter(BaseModel):
-    limit: int = Field(description="Note limit", default=10)
-    offset: int = Field(description="Note offset", default=0)
+    limit: int | None = Field(description="Note limit", default=10, gt=0)
+    offset: int | None = Field(description="Note offset", default=0, gt=0)
     search: str | None = Field(description="Search text", default=None)
     #user_uid: UUID4 | None = Field(description="User uid", default=None)

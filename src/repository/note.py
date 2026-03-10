@@ -19,10 +19,11 @@ class NoteRepository(SQLAlchemyRepository):
                         NoteModel.text.ilike(f'%{filter.search}%'),
                     )
                 )
-            if filter.limit is not None and filter.limit > 0:
+            if filter.limit is not None:
                 stmt = stmt.limit(filter.limit)
+            if filter.offset is not None:
                 stmt = stmt.offset(filter.offset)
-                stmt = stmt.order_by('uid')
+            stmt = stmt.order_by('uid')
 
             query_result = await session.execute(stmt)
             return query_result.scalars().all()

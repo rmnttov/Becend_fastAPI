@@ -46,19 +46,21 @@ class DbSettings(BaseSettings):
         return info.data.get('SQLALCHEMY_DATABASE_URI')
 
 
+class OllamaSettings(BaseSettings):
+    OLLAMA_BASE_MODEL: str = 'qwen3:4b'
+    OLLAMA_MODEL: str = 'qwen3-note-summ'
+    OLLAMA_MODEL_CONTEXT: str = 'Ты генерируешь краткий пересказ записок пользователя, выделяешь самую суть.'
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         extra='ignore',
         env_file='.env'
     )
     BASE_ROUTE_PATH: str = '/api/v1'
-    DB: DbSettings = DbSettings()
     LOG_LEVEL: str = 'INFO'
-
-    # TODO
-    BASE_OLLAMA_MODEL: str = 'qwen3:4b'
-    OLLAMA_MODEL: str = 'qwen3-short-thinker'
-    OLLAMA_MODEL_CONTEXT: str = ''
+    DB: DbSettings = DbSettings()
+    OLLAMA_SETTINGS: OllamaSettings = OllamaSettings()
 
 
 settings = Settings()

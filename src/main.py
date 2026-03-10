@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import ollama
 from fastapi.routing import APIRouter
 
 from src.config import settings
@@ -7,6 +8,10 @@ from src.route.users import router as users_router
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI(docs_url=f'{settings.BASE_ROUTE_PATH}/docs')
+
+ollama.create(model=settings.OLLAMA_SETTINGS.OLLAMA_MODEL,
+              from_=settings.OLLAMA_SETTINGS.OLLAMA_BASE_MODEL,
+              system=settings.OLLAMA_SETTINGS.OLLAMA_MODEL_CONTEXT)
 
 app.add_middleware(
     CORSMiddleware,

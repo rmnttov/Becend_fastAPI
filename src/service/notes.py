@@ -1,13 +1,12 @@
+import asyncio
 from fastapi.routing import APIRouter
 
 from src.repository.note import NoteRepository
 from src.scheme.notes import Note, NoteFilter, NoteUpdate
-from sqlalchemy import select, or_
-from sqlalchemy.ext.asyncio import AsyncSession
 from src.scheme.notes import Note, NoteFromDB
 from src.model.note import NoteModel
-import time
-import asyncio
+
+from src.adapter.ollama.llm_calls import call_ollama
 
 router = APIRouter()
 
@@ -21,24 +20,8 @@ class NoteService:
         return await note_repository.add_one(body.dict())
 
     @staticmethod
-    async def get_notes_list(filter_data: NoteFilter, db_session: AsyncSession) -> list[NoteModel]:
+    async def get_notes_list(filter_data: NoteFilter) -> list[NoteModel]:
         return await note_repository.get_list(filter_data)
-        #stmt = select(NoteModel)
-        #if filter_data.search is not None:
-        #    stmt = stmt.filter(
-         #       or_(
-          #          NoteModel.title.ilike(f'%{filter_data.search}%'),
-           #         NoteModel.text.ilike(f'%{filter_data.search}%'),
-            #    )
-            #)
-        #if filter_data.user_uid is not None:
-         #   stmt = stmt.filter(NoteModel.author_uid == filter_data.user_uid)
-        #if filter_data.limit is not None and filter_data.limit > 0:
-         #   stmt = stmt.limit(filter_data.limit)
-        #stmt = stmt.offset(filter_data.offset)
-        #stmt = stmt.order_by('uid')
-        #query_result = await db_session.execute(stmt)
-        #return query_result.scalars().all()
 
     @staticmethod
     async def update_note(body: NoteUpdate, uid: str) -> NoteFromDB:
@@ -51,12 +34,12 @@ class NoteService:
 
     @staticmethod
     async def generate_note_with_ai(uid: str, input_note: Note):
-        time.sleep(5)
-        text = 'generated text' + input_note.text
+        print(123)
+        ollama_response = call_ollama(input_note.title, input_note.text)
         await note_repository.update_one(
             {
                 'uid': uid,
-                'text': text
+                'text': ollama_response
             },
             uid
         )
@@ -69,6 +52,7 @@ class NoteService:
             'text': 'handling ...',
             'author_uid': input_note.author_uid,
         })
+        print(123)
         asyncio.create_task(
             NoteService.generate_note_with_ai(result_note.uid, input_note)
         )
