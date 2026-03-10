@@ -24,7 +24,6 @@ def call_ollama(user_message_title: str = '', user_message_content: str = '', te
         ],
         stream=True,
     )
-    print(stream)
     i = 0
     for chunk in stream:
         response += chunk['message']['content']

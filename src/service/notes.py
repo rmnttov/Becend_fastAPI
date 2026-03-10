@@ -34,7 +34,6 @@ class NoteService:
 
     @staticmethod
     async def generate_note_with_ai(uid: str, input_note: Note):
-        print(123)
         ollama_response = call_ollama(input_note.title, input_note.text)
         await note_repository.update_one(
             {
@@ -52,7 +51,6 @@ class NoteService:
             'text': 'handling ...',
             'author_uid': input_note.author_uid,
         })
-        print(123)
         asyncio.create_task(
             NoteService.generate_note_with_ai(result_note.uid, input_note)
         )

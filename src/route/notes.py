@@ -1,11 +1,8 @@
 from fastapi.routing import APIRouter
 from src.scheme.notes import Note, NoteFilter, NoteUpdate
 from pydantic import UUID4
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from src.scheme.notes import Note, NoteFromDB
 from src.service.notes import NoteService
-from src.adapter.db.session import get_session
 
 router = APIRouter()
 
@@ -16,8 +13,8 @@ async def post_notes(body: Note) -> NoteFromDB:
 
 
 @router.post('/list/')
-async def get_notes(filter_data: NoteFilter, db_session: AsyncSession = Depends(get_session)) -> list[NoteFromDB]:
-    return await NoteService.get_notes_list(filter_data, db_session)
+async def get_notes(filter_data: NoteFilter) -> list[NoteFromDB]:
+    return await NoteService.get_notes_list(filter_data)
 
 
 @router.patch('/{uid}')
